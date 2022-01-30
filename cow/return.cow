@@ -1,0 +1,12 @@
+import fs
+
+writeFile("test.txt", "Hello World")
+
+readFile("test.txt")
+
+print(readFile("test.txt"))
+define content string readFile("test.txt")
+print(content)
+define content2 string
+content2 = readFile("test.txt")
+print(content2)
