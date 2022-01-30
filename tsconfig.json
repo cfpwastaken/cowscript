@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "dist/",
     "rootDir": "./src/",
-    "moduleResolution": "classic",
+    "moduleResolution": "Node",
     "target": "ES5"
   },
   "include": [
