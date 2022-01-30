@@ -1,0 +1,9 @@
+strict
+define blah number
+print("Hello World!")
+print()
+print(blah)
+blah = 10
+gjdxgdfg = "hey!"
+print(blah)
+dhdgdfhghdfhgdfhg

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/",
+    "rootDir": "./src/",
+    "moduleResolution": "classic",
+    "target": "ES5"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

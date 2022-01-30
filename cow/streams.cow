@@ -1,0 +1,4 @@
+print("Normal print")
+print()
+error("Error")
+error()

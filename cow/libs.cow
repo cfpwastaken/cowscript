@@ -1,0 +1,38 @@
+print("Hello World")
+error("This is an error message")
+
+define veryCoolVariable number
+print("Variables are cool")
+print(veryCoolVariable)
+print("number default is 0")
+
+veryCoolVariable = 69
+print("Look now its 69:")
+print(veryCoolVariable)
+
+define anotherCoolVariable number 420
+print("Variables can be defined with a value")
+print(anotherCoolVariable)
+
+define faden string "This is a Faden"
+print(faden)
+
+faden = "This is a Faden but i changed it"
+print(faden)
+
+import fs
+
+writeFile("test.txt", "Hello World!")
+print("test.txt now contains Hello World!")
+
+print("the fs module is a js-module")
+print("cowscript modules soon?")
+
+print("This should throw an error")
+print(djgfjgdjxgdf)
+
+strict
+print("enabled strict mode")
+print("this should quit the program on error")
+print(vhhgxhdhgdhghdf)
+print("this should not be printed")
