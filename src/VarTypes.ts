@@ -5,7 +5,7 @@ export const number = new VarType("number", 0, (v) => {
 }, (v) => {
     return parseFloat(v);
 });
-export const string = new VarType("string", "", (v) => {
+export const string = new VarType("string", "\"\"", (v) => {
     return v.startsWith("\"") && v.endsWith("\"");
 }, (v) => {
     return v.substring(1, v.length - 1);

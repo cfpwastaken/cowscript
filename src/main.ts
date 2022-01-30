@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { readFileSync, existsSync } from "fs";
 import { Variable } from "./Variable";
 import * as types from "./VarTypes";
@@ -32,7 +33,13 @@ if(existsSync(file)) {
       if(!types[type]) {
         cowscriptError(`Unknown type '${type}'`);
       } else {
-        const value = line.split(" ").length < 4 ? types[type].default : line.split(" ").slice(3).join(" ");
+        let value = line.split(" ").length < 4 ? types[type].default : line.split(" ").slice(3).join(" ");
+        if(value.endsWith(")")) {
+          value = callFunction(value);
+          if(typeof value == "string") {
+            value = "\"" + value + "\"";
+          }
+        }
         if(types[type].validate(value)) {
           vars[name] = new Variable(name, types[type], types[type].convert(value));
         } else {
@@ -43,6 +50,12 @@ if(existsSync(file)) {
       const name = line.split(" ")[0];
       if(vars[name]) {
         let value = line.split(" ").slice(2).join(" ");
+        if(value.endsWith(")")) {
+          value = callFunction(value);
+          if(typeof value == "string") {
+            value = "\"" + value + "\"";
+          }
+        }
         if(vars[name].type.validate(value)) {
           vars[name].value = vars[name].type.convert(value);
         } else {
@@ -61,47 +74,7 @@ if(existsSync(file)) {
         cowscriptError(`Unknown library '${name}'`)
       }
     } else if(line.endsWith(")")) {
-      let ran = false;
-      for(const lib of libs) {
-        if(ran) continue;
-        if(lib[line.split("(")[0]]) {
-          // get arguments
-          let args = line.split("(")[1].split(")")[0].split(",");
-
-          let shouldRun = true;
-          
-          for(const i in args) {
-            let gotValue = false;
-            if(args[i].startsWith(" ")) {
-              args[i] = args[i].substring(1);
-            }
-            for(const j in vars) {
-              if(gotValue) continue;
-              if(args[i] === vars[j].name) {
-                args[i] = vars[j].value;
-                gotValue = true;
-              }
-            }
-            if(!gotValue) {
-              for(const type of Object.values(types)) {
-                if(gotValue) continue;
-                if(type.validate(args[i])) {
-                  args[i] = type.convert(args[i]);
-                  gotValue = true;
-                }
-              }
-            }
-            if(!gotValue && args[i] !== "") {
-              cowscriptError(`Unknown value '${args[i]}'`);
-              shouldRun = false;
-            }
-          }
-
-          if(shouldRun) lib[line.split("(")[0]].apply(null, args);
-          ran = true;
-        }
-      }
-      if(!ran) cowscriptError(`Unknown function`);
+      callFunction(line);
     } else {
       cowscriptError(`Unknown statement`);
     }
@@ -110,19 +83,52 @@ if(existsSync(file)) {
   console.error("File does not exist");
 }
 
-/*
-if((line.startsWith("print(") || line.startsWith("error(")) && line.endsWith(")")) {
-      const log = line.startsWith("print(") ? console.log : console.error;
-      const print = line.substring(6, line.length - 1);
-      if(print.startsWith("\"") && print.endsWith("\"")) {
-        log(print.substring(1, print.length - 1));
-      } else if(print === "") {
-        log();
-      } else {
-        if(vars[print]) {
-          log(vars[print].value);
-        } else {
-          cowscriptError(`[${file}:${i}] Can not access variable '${print}'`);
+function callFunction(line: string): any {
+  let rtn = undefined;
+  let ran = false;
+  for(const lib of libs) {
+    if(ran) continue;
+    if(lib[line.split("(")[0]]) {
+      // get arguments
+      let args = line.substring(line.split("(", 1)[0].length).substring(1, line.substring(line.split("(", 1)[0].length).length - 1).split(",");
+
+      let shouldRun = true;
+      
+      for(const i in args) {
+        let gotValue = false;
+        if(args[i].startsWith(" ")) {
+          args[i] = args[i].substring(1);
+        }
+        if(args[i].endsWith(")")) {
+          args[i] = callFunction(args[i]);
+          gotValue = true;
+        }
+        for(const j in vars) {
+          if(gotValue) continue;
+          if(args[i] === vars[j].name) {
+            args[i] = vars[j].value;
+            gotValue = true;
+          }
+        }
+        if(!gotValue) {
+          for(const type of Object.values(types)) {
+            if(gotValue) continue;
+            if(type.validate(args[i])) {
+              args[i] = type.convert(args[i]);
+              gotValue = true;
+            }
+          }
+        }
+        if(!gotValue && args[i] !== "") {
+          cowscriptError(`Unknown value '${args[i]}'`);
+          shouldRun = false;
         }
       }
-*/
+
+      if(shouldRun) rtn = lib[line.split("(")[0]].apply(null, args);
+      ran = true;
+    }
+  }
+  if(!ran) cowscriptError(`Unknown function`);
+  return rtn;
+}
