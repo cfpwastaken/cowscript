@@ -1,0 +1,11 @@
+// This is testing cowscript vscode lang support!
+// If comments are green, then yes
+define hello number
+// if define is pink/rose/idk then yes
+// if number is cyan then yes
+print("Hello World")
+// If string is orange then yes
+// If () auto completing then yes
+// ()
+hello = 10
+// nooo
