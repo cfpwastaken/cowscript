@@ -10,7 +10,7 @@ export const string = new VarType("string", "\"\"", (v) => {
 }, (v) => {
     return v.substring(1, v.length - 1);
 });
-export const boolean = new VarType("boolean", false, (v) => {
+export const boolean = new VarType("boolean", "false", (v) => {
     return v === "true" || v === "false";
 }, (v) => {
     return v === "true";

@@ -1,0 +1,40 @@
+define bool boolean true
+if(bool == true) {
+    print("tru")
+}
+if(1 == 1) {
+    print("1 is 1");
+}
+if("Hello" == "Hello") {
+    print("Hello is Hello");
+}
+if("Hello" == "Hi") {
+    print("NOOOOOOO")
+}
+print("end")
+if("Hello" == "Hello") {
+    print("Hello is Hello");
+    if("Hello 2" == "Hello 2") {
+        print("Hello 2 is Hello 2")
+    }
+    print("end of this if statement")
+}
+if("Hello" == "Hello") {
+    print("Hello is Hello");
+    if("Hello 2" == "Hello 3") {
+        print("oh no");
+        if("Hello 3" == "Hello") {
+            print("oh no again");
+        }
+    }
+}
+if("gxdfnxfdnd" == "ghdhjghdfghdhjfg") {
+    print("nope");
+    if("Hello" == "Hello") {
+        print("Hello IS Hello but this should never have ran");
+    }
+}
+print("Enter password: ")
+if(input() == "password") {
+    print("Correct!");
+}
