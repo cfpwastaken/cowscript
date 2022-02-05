@@ -16,6 +16,10 @@ export function input(v?: any): void {
     return prompt(v);
 }
 
-export function toNumber(v?: any): number {
+export function toNumber(v: any): number {
     return parseFloat(v);
+}
+
+export function exit(code?: any): void {
+    process.exit(code);
 }
