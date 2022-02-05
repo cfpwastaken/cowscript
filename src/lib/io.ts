@@ -15,3 +15,7 @@ export function error(v?: any): void {
 export function input(v?: any): void {
     return prompt(v);
 }
+
+export function toNumber(v?: any): number {
+    return parseFloat(v);
+}

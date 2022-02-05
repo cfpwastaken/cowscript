@@ -90,14 +90,27 @@ export function evalCode(line: string): any {
       cowscriptError(`Unknown library '${name}'`)
     }
   } else if(line.startsWith("if(") && line.endsWith("{")) {
-    const condition = line.substring(3, line.length - 3).split(" == ");
-    for(const cond in condition) {
-      condition[cond] = parseArg(condition[cond]);
-    }
-    if(condition[0] == condition[1]) {
-
-    } else {
-      ifSkip = 1;
+    const condition = line.substring(3, line.length - 3).split(/ (==|<|>) /g);
+    
+    condition[0] = parseArg(condition[0]);
+    condition[2] = parseArg(condition[2]);
+    
+    switch(condition[1]) {
+      case "==":
+        if(!(condition[0] == condition[2])) {
+          ifSkip = 1;
+        }
+        break;
+      case "<":
+        if(!(condition[0] < condition[2])) {
+          ifSkip = 1;
+        }
+        break;
+      case ">":
+        if(!(condition[0] > condition[2])) {
+          ifSkip = 1;
+        }
+        break;
     }
   } else if(line.startsWith("}")) {
     ifSkip--;
