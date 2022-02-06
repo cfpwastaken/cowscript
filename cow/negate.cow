@@ -1,0 +1,6 @@
+define blah boolean
+print(blah)
+print(!blah)
+blah = true
+print(blah)
+print(!blah)

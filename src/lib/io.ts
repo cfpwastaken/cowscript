@@ -1,4 +1,3 @@
-import { Variable } from "../Variable";
 import * as promptsync from "prompt-sync";
 const prompt = promptsync({
     sigint: true

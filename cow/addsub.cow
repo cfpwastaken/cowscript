@@ -1,0 +1,13 @@
+define num1 number
+define num2 number
+print(num1)
+print(num2)
+num1--
+num2++
+print(num1)
+print(num2)
+define str string "Hello"
+print(str)
+str--
+print(str)
+print(1 * 2)

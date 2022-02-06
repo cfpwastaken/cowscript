@@ -112,6 +112,30 @@ export function evalCode(line: string): any {
         }
         break;
     }
+  } else if(line.endsWith("++")) {
+    const varname = line.substring(0, line.length - 2);
+    if(vars[varname]) {
+      if(vars[varname].type.name == "number") {
+        vars[varname].value++;
+      } else {
+        cowscriptError(`Adding is not supported for ${vars[varname].type.name}`);
+      }
+    } else {
+      cowscriptError(`Variable ${varname} does not exist`)
+    }
+  } else if(line.endsWith("--")) {
+    const varname = line.substring(0, line.length - 2);
+    if(vars[varname]) {
+      if(vars[varname].type.name == "number") {
+        vars[varname].value--;
+      } else if(vars[varname].type.name == "string") {
+        vars[varname].value = vars[varname].value.substring(0, vars[varname].value.length - 1)
+      } else {
+        cowscriptError(`Removing is not supported for ${vars[varname].type.name}`);
+      }
+    } else {
+      cowscriptError(`Variable ${varname} does not exist`)
+    }
   } else if(line.startsWith("}")) {
     ifSkip--;
   } else if(line.endsWith(")")) {
@@ -121,7 +145,7 @@ export function evalCode(line: string): any {
   }
 }
 
-function parseArg(arg: string): any {
+function parseArg(arg): any {
   let gotValue = false;
   while(arg.startsWith(" ")) {
     arg = arg.substring(1);
@@ -137,6 +161,10 @@ function parseArg(arg: string): any {
       gotValue = true;
     }
   }
+  if(!gotValue && arg.startsWith("!")) {
+    arg = !parseArg(arg.substring(1));
+    gotValue = true;
+  }
   if(!gotValue) {
     for(const type of Object.values(types)) {
       if(gotValue) continue;
@@ -145,6 +173,41 @@ function parseArg(arg: string): any {
         gotValue = true;
       }
     }
+  }
+  if(!gotValue) {
+    const exprStr = arg.split(/ (\+|\-|\*|\/|\%) /g);
+    let expr = [];
+    if(exprStr.length == 3) {
+      expr[0] = parseFloat(parseArg(exprStr[0]));
+      expr[1] = exprStr[1];
+      expr[2] = parseFloat(parseArg(exprStr[2]));
+
+      gotValue = true;
+      switch(expr[1]) {
+        case "+":
+          arg = expr[0] + expr[2];
+          break;
+        case "-":
+          arg = expr[0] - expr[2];
+          break;
+        case "*":
+          arg = expr[0] * expr[2];
+          break;
+        case "/":
+          arg = expr[0] / expr[2];
+          break;
+        case "%":
+          arg = expr[0] % expr[2];
+          break;
+        default:
+          gotValue = false;
+          break;
+      }
+    }
+  }
+  if(!gotValue && arg.endsWith("!")) {
+    gotValue = true;
+    arg = factorial(parseArg(arg.substring(0, arg.length - 1)));
   }
   if(!gotValue && arg !== "") {
     cowscriptError(`Unknown value '${arg}'`);
@@ -178,4 +241,9 @@ function callFunction(line: string): any {
   }
   if(!ran) cowscriptError(`Unknown function`);
   return rtn;
+}
+
+function factorial(num: number) : number {
+  if (num == 0) return 1;
+  else return num * factorial(num - 1)
 }
