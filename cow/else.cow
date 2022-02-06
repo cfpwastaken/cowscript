@@ -1,0 +1,34 @@
+if("Hello" == "Hello") {
+    print("Hello is Hello");
+} else {
+    print("Hello is not Hello");
+}
+
+if("Helloo" == "Hello") {
+    print("Helloo is Hello");
+} else {
+    print("Helloo is not Hello");
+}
+
+print("Put in password: ")
+if(input() == "password") {
+    print("Access granted");
+} else {
+    print("Access denied");
+}
+
+if("Hello" == "Hello") {
+    print("Hello is Hello");
+    if(input() == "password") {
+        print("Access granted");
+        if(input() == "password") {
+            print("Access granted");
+        } else {
+            print("Access denied");
+        }
+    } else {
+        print("Access denied");
+    }
+} else {
+    print("Hello is not Hello");
+}

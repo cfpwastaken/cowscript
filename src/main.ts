@@ -136,6 +136,12 @@ export function evalCode(line: string): any {
     } else {
       cowscriptError(`Variable ${varname} does not exist`)
     }
+  } else if(line.startsWith("} else {")) {
+    if(ifSkip == 1) {
+      ifSkip = 0;
+    } else {
+      ifSkip = 1;
+    }
   } else if(line.startsWith("}")) {
     ifSkip--;
   } else if(line.endsWith(")")) {
