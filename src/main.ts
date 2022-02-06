@@ -3,7 +3,8 @@ import { readFileSync, existsSync } from "fs";
 import { Variable } from "./Variable";
 import * as types from "./VarTypes";
 
-const file = process.argv[2];
+//const file = process.argv[2];
+const file = "/home/cfp/cowscript/cow/elseif.cow";
 export const vars = {};
 const config = {
   strict: false
@@ -32,6 +33,7 @@ if(existsSync(file)) {
 }
 
 let ifSkip = 0;
+let elseIfSkip = false;
 
 export function evalCode(line: string): any {
   while(line.startsWith(" ") || line.startsWith("\t")) {
@@ -41,6 +43,7 @@ export function evalCode(line: string): any {
     line = line.substring(0, line.length - 1)
   }
   if(ifSkip > 0 && !line.startsWith("}")) return;
+  if(elseIfSkip == true && !line.endsWith("}")) return;
   if(line === "") return;
   if(line.startsWith("//")) return;
   if(line.startsWith("define ")) { // define name type (value)
@@ -90,27 +93,8 @@ export function evalCode(line: string): any {
       cowscriptError(`Unknown library '${name}'`)
     }
   } else if(line.startsWith("if(") && line.endsWith("{")) {
-    const condition = line.substring(3, line.length - 3).split(/ (==|<|>) /g);
-    
-    condition[0] = parseArg(condition[0]);
-    condition[2] = parseArg(condition[2]);
-    
-    switch(condition[1]) {
-      case "==":
-        if(!(condition[0] == condition[2])) {
-          ifSkip = 1;
-        }
-        break;
-      case "<":
-        if(!(condition[0] < condition[2])) {
-          ifSkip = 1;
-        }
-        break;
-      case ">":
-        if(!(condition[0] > condition[2])) {
-          ifSkip = 1;
-        }
-        break;
+    if(!checkCondition(line.substring(3, line.length - 3))) {
+      ifSkip = 1;
     }
   } else if(line.endsWith("++")) {
     const varname = line.substring(0, line.length - 2);
@@ -136,14 +120,32 @@ export function evalCode(line: string): any {
     } else {
       cowscriptError(`Variable ${varname} does not exist`)
     }
+  } else if(line.startsWith("} else if(") && line.endsWith(") {")) {
+      console.log(checkCondition(line.substring(10, line.length - 3)));
+
+      if(elseIfSkip) {
+        return;
+      }
+      
+      if(checkCondition(line.substring(10, line.length - 3))) {
+        ifSkip = 0;
+        elseIfSkip = true;
+      } else {
+        ifSkip = 1;
+      }
   } else if(line.startsWith("} else {")) {
     if(ifSkip == 1) {
       ifSkip = 0;
     } else {
       ifSkip = 1;
     }
+    console.log(elseIfSkip, "SETTING TO FALSE");
+    elseIfSkip = false;
   } else if(line.startsWith("}")) {
     ifSkip--;
+    console.log(elseIfSkip, "SETTING TO FALSE");
+    
+    elseIfSkip = false;
   } else if(line.endsWith(")")) {
     callFunction(line);
   } else {
@@ -252,4 +254,33 @@ function callFunction(line: string): any {
 function factorial(num: number) : number {
   if (num == 0) return 1;
   else return num * factorial(num - 1)
+}
+
+function checkCondition(line) {
+  const condition = line.split(/ (==|<|>) /g);
+  
+  let result = false;
+  
+  condition[0] = parseArg(condition[0]);
+  condition[2] = parseArg(condition[2]);
+  
+  switch(condition[1]) {
+    case "==":
+      if(condition[0] == condition[2]) {
+        result = true;
+      }
+      break;
+    case "<":
+      if(condition[0] < condition[2]) {
+        result = true;
+      }
+      break;
+    case ">":
+      if(condition[0] > condition[2]) {
+        result = true;
+      }
+      break;
+  }
+  
+  return result;
 }
